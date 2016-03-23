@@ -1,0 +1,21 @@
+<?php
+
+use Illuminate\Database\Seeder;
+
+class UserSeeding extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        factory(App\User::class)->create(
+            [
+                'email' => 'info@aqibd.com',
+                'password' => bcrypt('admin')
+            ]
+        );
+    }
+}
