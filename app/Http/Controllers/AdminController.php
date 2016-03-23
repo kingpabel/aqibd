@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
+use App\AirData;
+use App\AirType;
+use App\Location;
 use Illuminate\Http\Request;
+use Validator;
+use Session;
 
 class AdminController extends Controller
 {
@@ -17,13 +21,61 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
+    public function index()
+    {
+        $data['air_datas'] = AirData::with(['location', 'airType'])->get();
+        return view('admin.list', $data);
+    }
+
     /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function create()
     {
-        return view('home');
+        $data['locations'] = Location::all();
+        $data['air_types'] = AirType::all();
+        return view('admin.index', $data);
+    }
+
+    /**
+     * @param Request $request
+     * @return $this|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function store(Request $request)
+    {
+        $validator = $this->validation($request->all());
+        if ($validator->fails()) {
+            return redirect("admin/create")
+                ->withInput($request->all())
+                ->withErrors(
+                    $validator->messages()
+                );
+        }
+
+        $airData = new AirData();
+        $airData->date_time = $request->date_time;
+        $airData->location_id = $request->location_id;
+        $airData->air_type_id = $request->air_type_id;
+        $airData->value = $request->value;
+        $airData->save();
+
+        Session::flash('success', 'Air Data Save Successfully');
+        return redirect('admin/create');
+    }
+
+    /**
+     * @param $data
+     * @return mixed
+     */
+    protected function validation($data)
+    {
+        return Validator::make($data, [
+            'date_time' => 'required|date_format:Y-m-d H:i',
+            'location_id' => 'required',
+            'air_type_id' => 'required',
+            'value' => 'required|integer',
+        ]);
     }
 }
