@@ -14,14 +14,15 @@
 Route::group(['middleware' => ['web']], function () {
 
     Route::get('/', function () {
-        return view('welcome');
+        return view('index');
     });
 
-
-});
-
-Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
-    Route::get('/home', 'HomeController@index');
+    Route::group(['prefix' => 'admin'], function () {
+
+        Route::get('/', 'AdminController@index');
+
+    });
+
 });
