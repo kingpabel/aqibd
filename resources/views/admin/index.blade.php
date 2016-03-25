@@ -51,8 +51,8 @@
                                         <label for="inputPassword3" class="col-sm-3 control-label">Location</label>
                                         <div class="col-sm-9">
                                             <select class="form-control" name="location_id" required>
+                                                <option value="">Please Select a Location</option>
                                                 @foreach($locations as  $location)
-                                                    <option value="">Please Select a Location</option>
                                                     <option value="{{ $location->id }}"
                                                             @if(old('location_id') == $location->id) selected @endif> {{ $location->name }} </option>
                                                 @endforeach
