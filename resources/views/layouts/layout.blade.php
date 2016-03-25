@@ -83,7 +83,7 @@
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
                     <li>
-                        <a href=""><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        <a href="{{ url('admin/create') }}"><i class="fa fa-dashboard fa-fw"></i> Create</a>
                     </li>
                     <li>
                         <a href="{{ url('admin') }}"><i class="fa fa-dashboard fa-fw"></i> All Air Data</a>
