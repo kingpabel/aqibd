@@ -40,21 +40,21 @@ class HomeController extends Controller
     public function colorChooser($value)
     {
         if ($value >= 0 && $value <= 50)
-            return 'green';
+            return '#009966';
 
         elseif ($value >= 51 && $value <= 100)
-            return 'yellow';
+            return '#FFDE33';
 
         elseif ($value >= 101 && $value <= 150)
-            return 'blue';
+            return '#FF9933';
 
         elseif ($value >= 151 && $value <= 200)
-            return 'red';
+            return '#CC0033';
 
         elseif ($value >= 251 && $value <= 300)
-            return 'sky';
+            return '#660099';
 
-        elseif ($value >= 251 && $value <= 300)
-            return 'black';
+        else
+            return '#7E0023';
     }
 }
