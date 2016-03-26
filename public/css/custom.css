@@ -1,18 +1,156 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+a{
+	color:#7a1632;
+}
 .bu-border{
 	border:1px solid red;
 	border-radius:10px;
 	overflow:hidden;
 	padding:10px;
 }
-.bu-chart-10 {
-  float: left;
-  width: 13%;
+.logo-bu img {
+  float: right;
 }
-.bu-chart-60 {
-  float: left;
-  width: 40%;
+.logo-aqi {
+  padding: 10px 0;
+}
+.logo-bu {
+  padding: 10px 0;
+}
+.homesearch{
+	margin:20px 0;
+}
+.homesearch .buaqif1 {
+  border: 1px solid #ddd;
+  padding: 3px 10px;
+  width: 100%;
+}
+.homesearch .buf3 {
+  border: 1px solid #ddd;
+  border-radius: 0;
+  height: auto;
+  padding: 3px 10px;
+  width: 100%;
+}
+.busubmit {
+  background: #7a1632;
+  border: 0 none;
+  color: #fff;
+  max-width: 248px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  width: 100%;
 }
 
+.bu-chart-10 {
+
+  float: left;
+
+  width: 13%;
+
+}
+
+.bu-chart-60 {
+
+  float: left;
+
+  width: 40%;
+
+}
+
+
+
 .margin-left-2{
+
     margin-left: 2%;
+
+}
+.latest-news {
+  border: 1px solid #ddd;
+  margin: 20px 0 20px 20px;
+  padding: 10px 10px 4px;
+}
+.photo-galleery {
+  border: 1px solid #ddd;
+  margin: 20px 20px 20px 0;
+  padding: 10px;
+}
+.newsrow {
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 10px;
+}
+.newsrow:last-child{
+	border:0;
+}
+a.read-more {
+  background: #7a1632 none repeat scroll 0 0;
+  color: #fff;
+  float: right;
+  margin: 0 0 0 15px;
+  padding: 2px 10px;
+}
+.date-news {
+  font-size: 12px;
+}
+.aqpminfo h2 {
+  font-weight: 300;
+  text-align: center;
+}
+.aqpminfo p {
+  text-align: center;
+}
+.aqpm {
+  border: 1px solid #ddd;
+  margin: 20px;
+  padding: 10px;
+}
+.infoaqitable td {
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 15px;
+  padding: 15px;
+}
+.infoaqitable th {
+  background: #ddd none repeat scroll 0 0;
+  border: 2px solid #fff;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 15px;
+  text-align: center;
+}
+.footer{
+    background: #7a1632;
+}
+.footer-menu{
+	margin:15px 0 0 0;
+}
+.footer-menu ul{
+	text-align:center;
+}
+.footer-menu ul li {
+  display: inline-block;
+  padding: 10px;
+  text-transform: uppercase;
+}
+.footer-menu ul li a{
+	color:#fff;
+}
+.footer-menu ul li a:hover{
+	color:#EA262A;
+	text-decoration:none;
+}
+.copyright{
+	margin:27px 0 0 0;
+}
+.copyright p{
+	color:#fff;
+}
+.copyright a{
+	color:#EA262A;
+}
+.copyright a:hover{
+	color:#fff;
 }
