@@ -13,18 +13,18 @@
 
 Route::group(['middleware' => ['web']], function () {
 
-    Route::auth();
-    Route::get('/', 'HomeController@index');
-    Route::get('/{name}', 'HomeController@getByAddress');
-    Route::get('/{name}/search', 'HomeController@search');
-
-
     Route::group(['prefix' => 'admin'], function () {
 
         Route::get('/', 'AdminController@index');
+        Route::put('/{airData}', 'AdminController@update');
+        Route::get('/{airData}/edit', 'AdminController@edit');
         Route::get('/create', 'AdminController@create');
         Route::post('/store', 'AdminController@store');
 
     });
 
+    Route::auth();
+    Route::get('/', 'HomeController@index');
+    Route::get('/{name}', 'HomeController@getByAddress');
+    Route::get('/{name}/search', 'HomeController@search');
 });
