@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\AirData;
 use App\AirType;
-use App\Http\Requests;
+use Illuminate\Http\Request;
 use App\Location;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -28,15 +27,123 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data['airDatas'] = AirType::with('airData')->whereHas('airData', function ($query) {
-            $query->whereBetween('date_time', array(Carbon::now()->subDays(7)->toDateString(), Carbon::now()->toDateString()))
-                ->whereLocationId(3);
-        })->get();
-//        dd($data['airDatas']->toArray());
+        $data['allLocation'] = Location::all();
+        $data['current'] = $data['allLocation'][0];
+        $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
+        $data['airDatas'] = $this->getAirTypeWithDataByDate(false, false, $data['current']->id);
+        $data['allAirType'] = AirType::all();
+        $data['params']['start'] = Carbon::now()->subDays(7)->toDateString();
+        $data['params']['end'] = Carbon::now()->toDateString();
 
         return view('index', $data);
     }
 
+    public function getByAddress($name)
+    {
+        $data['allLocation'] = Location::all();
+        $data['current'] = Location::whereName($name)->first();
+        $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
+        $data['airDatas'] = $this->getAirTypeWithDataByDate(false, false, $data['current']->id);
+        $data['allAirType'] = AirType::all();
+        $data['params']['start'] = Carbon::now()->subDays(7)->toDateString();
+        $data['params']['end'] = Carbon::now()->toDateString();
+
+        return view('index', $data);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function search(Request $request)
+    {
+        $data['allLocation'] = Location::all();
+        $data['current'] = Location::find($request->location_id);
+        $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
+
+        if($request->has('air_type_id'))
+            $data['airDatas'] = $this->getAirTypeWithDataByDate($request->start, $request->end, $request->location_id, $request->air_type_id);
+        else
+            $data['airDatas'] = $this->getAirTypeWithDataByDate($request->start, $request->end, $request->location_id);
+
+        $data['allAirType'] = AirType::all();
+        $data['params'] = $request->all();
+
+        return view('index', $data);
+    }
+
+    /**
+     * @param bool $start
+     * @param bool $end
+     * @param $airId
+     * @return mixed
+     */
+    protected function getAirDataByDate($start = false, $end = false, $airId)
+    {
+        if (!$start)
+            $start = Carbon::createFromDate()->hour(00)->minute(00)->second(00);
+
+        if (!$end)
+            $end = Carbon::createFromDate()->hour(23)->minute(59)->second(59);
+
+        $airData = AirData::with(['location', 'airType'])
+            ->whereBetween('date_time', array($start, $end));
+
+        if ($airId)
+            $airData = $airData->whereAirTypeId($airId);
+
+        return $airData->groupBy('location_id')
+            ->get();
+    }
+
+    /**
+     * @param bool $start
+     * @param bool $end
+     * @param $location
+     * @param bool $airType
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    protected function getAirTypeWithDataByDate($start = false, $end = false, $location, $airType = false)
+    {
+        if (!$start)
+            $start = Carbon::now()->subDays(7)->hour(00)->minute(00)->second(00)->toDateTimeString();
+
+        if (!$end)
+            $end = Carbon::now()->hour(23)->minute(59)->second(59)->toDateTimeString();
+
+        $airData = new AirType();
+
+        if ($airType) {
+            $airData = $airData->with(['airData' => function ($query) use ($start, $end, $location, $airType) {
+                $query->whereBetween('date_time', array($start, $end))
+                    ->where('location_id', $location)
+                    ->whereAirTypeId($airType)
+                    ->orderBy('date_time', 'desc');
+//                ->groupBy(\DB::raw('DATE(date_time)'));
+            }])->whereHas('airData', function ($query) use ($start, $end, $location, $airType) {
+                $query->whereBetween('date_time', array($start, $end))
+                    ->whereAirTypeId($airType)
+                    ->where('location_id', $location);
+            });
+        } else {
+            $airData = $airData->with(['airData' => function ($query) use ($start, $end, $location, $airType) {
+                $query->whereBetween('date_time', array($start, $end))
+                    ->where('location_id', $location)
+                    ->orderBy('date_time', 'desc');
+//                ->groupBy(\DB::raw('DATE(date_time)'));
+            }])->whereHas('airData', function ($query) use ($start, $end, $location, $airType) {
+                $query->whereBetween('date_time', array($start, $end))
+                    ->where('location_id', $location);
+            });
+        }
+
+        return $airData->get();
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function colorChooser($value)
     {
         if ($value >= 0 && $value <= 50)

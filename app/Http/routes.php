@@ -13,9 +13,11 @@
 
 Route::group(['middleware' => ['web']], function () {
 
-    Route::get('/', 'HomeController@index');
-
     Route::auth();
+    Route::get('/', 'HomeController@index');
+    Route::get('/{name}', 'HomeController@getByAddress');
+    Route::get('/{name}/search', 'HomeController@search');
+
 
     Route::group(['prefix' => 'admin'], function () {
 
