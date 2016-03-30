@@ -5,8 +5,7 @@ a{
 	color:#7a1632;
 }
 .bu-border{
-	border:1px solid red;
-	border-radius:10px;
+	border:1px solid #ddd;
 	overflow:hidden;
 	padding:10px;
 }
@@ -20,7 +19,7 @@ a{
   padding: 10px 0;
 }
 .homesearch{
-	margin:20px 0;
+	padding: 15px 0 40px 0px;
 }
 .homesearch .buaqif1 {
   border: 1px solid #ddd;
@@ -38,10 +37,11 @@ a{
   background: #7a1632;
   border: 0 none;
   color: #fff;
-  max-width: 248px;
+  max-width: 263px;
   padding: 5px 10px;
   text-transform: uppercase;
   width: 100%;
+  border-radius: 0px;
 }
 
 .bu-chart-10 {
@@ -69,12 +69,12 @@ a{
 }
 .latest-news {
   border: 1px solid #ddd;
-  margin: 20px 0 20px 20px;
+  margin: 20px 0;
   padding: 10px 10px 4px;
 }
 .photo-galleery {
   border: 1px solid #ddd;
-  margin: 20px 20px 20px 0;
+  margin: 20px 0;
   padding: 10px;
 }
 .newsrow {
@@ -103,7 +103,7 @@ a.read-more {
 }
 .aqpm {
   border: 1px solid #ddd;
-  margin: 20px;
+  margin: 20px 0;
   padding: 10px;
 }
 .infoaqitable td {
@@ -153,4 +153,61 @@ a.read-more {
 }
 .copyright a:hover{
 	color:#fff;
+}
+.pm2avg p {
+  color: #0086c8;
+  font-family: "Oranienbaum",serif;
+  font-size: 16px;
+  font-weight: bold;
+}
+.avssingleleft {
+  border-radius: 10px;
+  color: #000;
+  float: left;
+  font-family: "Oranienbaum",serif;
+  font-size: 100px;
+  line-height: 120px;
+  padding: 5px 0 0;
+  text-align: center;
+  width: 220px;
+}
+.avssingleright {
+  float: left;
+  font-family: oranienbaum;
+  font-size: 40px;
+  line-height: 40px;
+  margin: 0 0 0 10px;
+  padding: 20px 0;
+  text-shadow: 1px 1px 0 #000;
+  width: 295px;
+}
+.row-border-x{
+	margin:20px 0 0 0;
+}
+.pm2avg {
+  border-bottom: 1px solid #ddd;
+  overflow: hidden;
+}
+.chartpmaqi {
+  clear: both;
+}
+.pmaqi1 {
+  float: left;
+  width: 80px;
+}
+.pmaqi2 {
+  float: left;
+  width: 40px;
+}
+.pmaqi3 {
+  float: left;
+  width: 330px;
+}
+.pmaqi4 {
+  float: left;
+  width: 40px;
+}
+.pmaqi5 {
+  float: left;
+  width: 40px;
 }

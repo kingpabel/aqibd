@@ -79,6 +79,20 @@
                                                    placeholder="value" value="{{ old('value') ?:$airData->value }}">
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="col-sm-3 control-label">Min</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" required name="min" class="form-control"
+                                                   placeholder="Min" value="{{ old('min') ?:$airData->min }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="col-sm-3 control-label">Max</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" required name="max" class="form-control"
+                                                   placeholder="Max" value="{{ old('max') ?:$airData->max }}">
+                                        </div>
+                                    </div>
 
                                     <div class="form-group">
                                         <div class="col-sm-offset-3 col-sm-9">

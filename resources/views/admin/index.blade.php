@@ -80,6 +80,22 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="inputEmail3" class="col-sm-3 control-label">Min</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" required name="min" class="form-control"
+                                                   placeholder="Min" value="{{ old('min') ?:'' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputEmail3" class="col-sm-3 control-label">Max</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" required name="max" class="form-control"
+                                                   placeholder="Max" value="{{ old('max') ?:'' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
                                         <div class="col-sm-offset-3 col-sm-9">
                                             <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>
                                                 Save

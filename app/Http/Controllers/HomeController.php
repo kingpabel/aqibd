@@ -27,15 +27,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data['allLocation'] = Location::all();
-        $data['current'] = $data['allLocation'][0];
+//        $data['allLocation'] = Location::all();
+        $data['menu'] = 'Air Quality';
+        $data['current'] = Location::find(2);
         $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
         $data['airDatas'] = $this->getAirTypeWithDataByDate(false, false, $data['current']->id);
+        $data['airDatasAllType'] = $this->getAllTypeAirDataByDate(false, false, $data['current']->id);
         $data['allAirType'] = AirType::all();
-        $data['params']['start'] = Carbon::now()->subDays(7)->toDateString();
+        $data['params']['start'] = Carbon::now()->subDays(30)->toDateString();
         $data['params']['end'] = Carbon::now()->toDateString();
 
-        return view('index', $data);
+        return view('front-end.index', $data);
     }
 
     public function getByAddress($name)
@@ -44,8 +46,9 @@ class HomeController extends Controller
         $data['current'] = Location::whereName($name)->first();
         $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
         $data['airDatas'] = $this->getAirTypeWithDataByDate(false, false, $data['current']->id);
+        $data['airDatasAllType'] = $this->getAllTypeAirDataByDate(false, false, $data['current']->id);
         $data['allAirType'] = AirType::all();
-        $data['params']['start'] = Carbon::now()->subDays(7)->toDateString();
+        $data['params']['start'] = Carbon::now()->subDays(30)->toDateString();
         $data['params']['end'] = Carbon::now()->toDateString();
 
         return view('index', $data);
@@ -61,7 +64,7 @@ class HomeController extends Controller
         $data['current'] = Location::find($request->location_id);
         $data['todayAirDatas'] = $this->getAirDataByDate(false, false, 1);
 
-        if($request->has('air_type_id'))
+        if ($request->has('air_type_id'))
             $data['airDatas'] = $this->getAirTypeWithDataByDate($request->start, $request->end, $request->location_id, $request->air_type_id);
         else
             $data['airDatas'] = $this->getAirTypeWithDataByDate($request->start, $request->end, $request->location_id);
@@ -70,6 +73,25 @@ class HomeController extends Controller
         $data['params'] = $request->all();
 
         return view('index', $data);
+    }
+
+    protected function getAllTypeAirDataByDate($start = false, $end = false, $location = false)
+    {
+        if (!$start)
+            $start = Carbon::createFromDate()->hour(00)->minute(00)->second(00);
+
+        if (!$end)
+            $end = Carbon::createFromDate()->hour(23)->minute(59)->second(59);
+
+
+        $airData = AirData::with(['location', 'airType'])
+            ->whereBetween('date_time', array($start, $end));
+
+        if ($location)
+            $airData = $airData->whereLocationId($location);
+
+        return $airData->groupBy('air_type_id')
+            ->get();
     }
 
     /**
@@ -85,6 +107,7 @@ class HomeController extends Controller
 
         if (!$end)
             $end = Carbon::createFromDate()->hour(23)->minute(59)->second(59);
+
 
         $airData = AirData::with(['location', 'airType'])
             ->whereBetween('date_time', array($start, $end));
@@ -106,7 +129,7 @@ class HomeController extends Controller
     protected function getAirTypeWithDataByDate($start = false, $end = false, $location, $airType = false)
     {
         if (!$start)
-            $start = Carbon::now()->subDays(7)->hour(00)->minute(00)->second(00)->toDateTimeString();
+            $start = Carbon::now()->subDays(30)->hour(00)->minute(00)->second(00)->toDateTimeString();
 
         if (!$end)
             $end = Carbon::now()->hour(23)->minute(59)->second(59)->toDateTimeString();
@@ -147,21 +170,39 @@ class HomeController extends Controller
     public function colorChooser($value)
     {
         if ($value >= 0 && $value <= 50)
-            return '#009966';
+            return ['#009966', 'Good'];
 
         elseif ($value >= 51 && $value <= 100)
-            return '#FFDE33';
+            return ['#FFDE33', 'Moderate'];
 
         elseif ($value >= 101 && $value <= 150)
-            return '#FF9933';
+            return ['#FF9933', 'Unhealthy for Sensitive Groups'];
 
         elseif ($value >= 151 && $value <= 200)
-            return '#CC0033';
+            return ['#CC0033', 'Unhealthy'];
 
         elseif ($value >= 251 && $value <= 300)
-            return '#660099';
+            return ['#660099', 'Very Unhealthy'];
 
         else
-            return '#7E0023';
+            return ['#7E0023', 'Hazardous'];
+    }
+
+    public function urbanRegeneration()
+    {
+        $data['menu'] = 'Urban Regeneration';
+        return view('front-end.urban-regeneration', $data);
+    }
+
+    public function environmentalHealth()
+    {
+        $data['menu'] = 'Environmental Health';
+        return view('front-end.environmental-health', $data);
+    }
+
+    public function digitalDhaka()
+    {
+        $data['menu'] = 'Digital Dhaka';
+        return view('front-end.digital-dhaka', $data);
     }
 }

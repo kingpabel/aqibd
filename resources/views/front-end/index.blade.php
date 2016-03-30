@@ -1,58 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
-    <title>Bangladesh Air Pollution | Real time PM2.5 Air Quality Index(AQI) | Bangladesh University</title>
-
-    <!-- Bootstrap core CSS -->
-    <script src="{{ asset('bower_components/jquery/dist/jquery.min.js') }}"></script>
-    <link href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="{{ asset('css/ie10-viewport-bug-workaround.css')}}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{ asset('css/justified-nav.css')}}" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="{{ asset('css/custom.css')}}" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="{{ asset('js/ie-emulation-modes-warning.js')}}"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <script>
-        $(function () {
-            $(".datepicker").datepicker({
-                dateFormat: 'yy-mm-dd',
-                changeMonth: true,
-                changeYear: true
-            });
-        });
-    </script>
-    @inject('contoller', 'App\Http\Controllers\HomeController')
+@extends('layouts.frontLayout')
+@section('jsTop')
+    @inject('controller', 'App\Http\Controllers\HomeController')
     <script type="text/javascript">
         google.charts.load("current", {packages: ['corechart']});
+        <?php
+        $pmGraph = $airDatas->filter(function ($value, $key) {
+            return $value->id == 1;
+        })->first();
+
+        $airDatas = $airDatas->reject(function ($value, $key) {
+            return $value->id == 1;
+        });
+        ?>
+
+        @if($pmGraph && !empty($pmGraph))
+        google.charts.setOnLoadCallback(drawChart{{ $pmGraph->id }});
+        function drawChart{{ $pmGraph->id }}() {
+            var data = google.visualization.arrayToDataTable([
+                ["Element", "Density", {role: "style"}],
+                    @foreach($pmGraph->airData as $airData)
+                ["{{ $airData->date_time }}", {{ $airData->value }}, "{{ $controller->colorChooser($airData->value)[0] }}"],
+                @endforeach
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+//                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2]);
+
+            var options = {
+                title: "",
+                height: 100,
+                bar: {groupWidth: "95%"},
+                legend: {position: "none"},
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values{{ $pmGraph->id }}"));
+            chart.draw(view, options);
+        }
+        @endif
+
         @foreach($airDatas as $airData)
         google.charts.setOnLoadCallback(drawChart{{ $airData->id }});
         function drawChart{{ $airData->id }}() {
             var data = google.visualization.arrayToDataTable([
                 ["Element", "Density", {role: "style"}],
                     @foreach($airData->airData as $data)
-                ["{{ $data->date_time }}", {{ $data->value }}, "{{ $contoller->colorChooser($data->value) }}"],
+                ["{{ $data->date_time }}", {{ $data->value }}, "{{ $controller->colorChooser($data->value)[0] }}"],
                 @endforeach
             ]);
 
@@ -80,8 +78,8 @@
     <script>
         var locations = [
                 @foreach($todayAirDatas as $todayAirData)
-            ['{{ $todayAirData->location->name }}', {{ $todayAirData->location->lat }}, {{ $todayAirData->location->lng }}, '{{ $todayAirData->airType->name.' '.$todayAirData->value }}'],
-                @endforeach
+            ['{{ $todayAirData->location->name }}', {{ $todayAirData->location->lat }}, {{ $todayAirData->location->lng }}, '{{ $todayAirData->airType->name }}', '{{ $todayAirData->value }}'],
+            @endforeach
         ];
         function initMap() {
 
@@ -94,21 +92,6 @@
             });
 
             setMarkers(map, locations);
-
-
-            /*for (i = 0; i < locations.length; i++) {
-             marker = new google.maps.Marker({
-             position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-             map: map,
-             title: locations[i][0]
-             });
-             }*/
-
-            /*var marker = new google.maps.Marker({
-             position: myLatLng,
-             map: map,
-             title: 'Hello World!'
-             });*/
         }
 
         function setMarkers(map, locations) {
@@ -121,6 +104,7 @@
                 var lat = locations[i][1];
                 var long = locations[i][2];
                 var add = locations[i][3];
+                var value = locations[i][4];
 
                 latlngset = new google.maps.LatLng(lat, long);
 
@@ -132,7 +116,7 @@
                 map.setCenter(marker.getPosition());
 
 
-                var content = loan + '<h3>' + add + '</h3>';
+                var content = loan + '<h3>' + add + '<span style="margin-left: 10%">' + value + '</span></span>';
 
                 var infowindow = new google.maps.InfoWindow();
 
@@ -146,81 +130,79 @@
             }
         }
     </script>
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?callback=initMap">
-    </script>
-</head>
 
-<body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="logo-aqi">
-                <img class="img-responsive" src="{{ asset('images/aqi-logo-t.png') }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="logo-bu">
-                <img class="img-responsive" src="{{ asset('images/aqi_bu_logo.png') }}">
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <!-- The justified navigation menu is meant for single line per list item.
-           Multiple lines will require custom code not provided by Bootstrap. -->
-    <div class="masthead">
-        <nav>
-            <ul class="nav nav-justified">
-                @foreach($allLocation as $location)
-                <li @if($current->id == $location->id) class="active" @endif><a href='{{ url("$location->name") }}'>{{ explode(',',$location->name)[0] }}</a></li>
-                    @endforeach
-            </ul>
-        </nav>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="homesearch">
-                <form class="form-inline" role="form" method="get" action='{{ url("$current->name/search") }}'>
-                    <div class="col-md-3">
-                        <input type="text" class="buaqif1 datepicker" id="buf1" placeholder="End Date" name="start" value="@if(isset($params) && isset($params['start']) && $params['start']) {{ $params['start'] }}@else {{ date('Y-m-d') }}@endif">
-                    </div>
-                    <input type="hidden" name="location_id" value="{{ $current->id }}">
-                    <div class="col-md-3">
-                        <input type="text" class="buaqif1 datepicker" id="buf2" placeholder="Start Date" name="end" value="@if(isset($params) && isset($params['end']) && $params['end']){{ $params['end'] }} @else {{ date('Y-m-d') }} @endif">
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control buf3" id="sel1" name="air_type_id">
-                            <option value="">Please Select a air type</option>
-                            @foreach($allAirType as $airType)
-                                <option @if(isset($params) && isset($params['air_type_id']) && $params['air_type_id'] && $params['air_type_id'] == $airType->id) selected @endif value="{{ $airType->id }}">{{ $airType->name }}</option>
-                                @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-default busubmit">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="container">
+@endsection
+@section('content')
+
+    <div class="row-border-x">
         <div class="row">
             <div class="col-md-6">
-                <div class="bu-border"> @foreach($airDatas as $airData)
-                        <div class="row">
-                            <div class="bu-chart">
-                                <div class="bu-chart-10 margin-left-2"> {{ $airData->name }} </div>
-                                <div class="bu-chart-10"> {{ $airData->value }} </div>
-                                <div class="bu-chart-60">
-                                    <div id="columnchart_values{{ $airData->id }}"></div>
+                <div class="bu-border">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="part1">
+                                <div class="pm2avg">
+                                    <p>Current day's PM 2.5:</p>
+                                    <div class="avgsingle">
+                                        <?php
+                                        $pmData = $todayAirDatas->filter(function ($value, $key) use ($current) {
+                                            return $value->location_id == $current->id;
+                                        })->first();
+                                        ?>
+                                        <span class="avssingleleft"
+                                              @if($pmData && isset($pmData->value)) style="background:{{ $controller->colorChooser($pmData->value)[0] }}" @endif>
+
+                                            @if($pmData && isset($pmData->value))
+                                                {{ $pmData->value }}
+                                            @endif
+                                </span>
+                            	<span class="avssingleright"
+                                      @if($pmData && isset($pmData->value)) style="color:{{ $controller->colorChooser($pmData->value)[0] }}" @endif>
+                                @if($pmData && isset($pmData->value))
+                                    {{ $controller->colorChooser($pmData->value)[1] }}
+                                    @endif
+                                </span>
+                                    </div>
+                                    <div class="chartpmaqi">
+                                        <div class="pmaqi1">PM 2.5 AQI</div>
+                                        <div class="pmaqi2"> @if($pmData && isset($pmData->value))
+                                                {{ $pmData->value }}
+                                            @endif</div>
+                                        <div class="pmaqi3">
+                                            @if($pmGraph && !empty($pmGraph))
+                                                <div id="columnchart_values{{ $pmGraph->id }}"></div>
+                                            @endif
+                                        </div>
+                                        <div class="pmaqi4"> @if($pmData && isset($pmData->min))
+                                                {{ $pmData->min }}
+                                            @endif</div>
+                                        <div class="pmaqi5"> @if($pmData && isset($pmData->max))
+                                                {{ $pmData->max }}
+                                            @endif</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    @foreach($airDatas as $airData)
+                        <?php
+                        $currentType = $airDatasAllType->filter(function ($value, $key) use ($airData) {
+                            return $value->air_type_id == $airData->id;
+                        })->first();
+                        ?>
+                            <div class="chartpmaqi">
+                                <div class="pmaqi1">{{ $airData->name }}</div>
+                                <div class="pmaqi2"> @if($currentType) {{ $currentType->value }} @endif</div>
+                                <div class="pmaqi3">
+                                    <div id="columnchart_values{{ $airData->id }}"></div>
+                                </div>
+                                <div class="pmaqi4"> @if($currentType) {{ $currentType->min }} @endif</div>
+                                <div class="pmaqi5"> @if($currentType) {{ $currentType->max }} @endif</div>
+                            </div>
                     @endforeach </div>
             </div>
             <div class="col-md-6">
-                <div class="bu-map bu-border" id="map" style="height: 300px">
+                <div class="bu-map bu-border" id="map" style="height: 600px">
                     <p>Map Goes Here</p>
                 </div>
             </div>
@@ -334,28 +316,6 @@
             </div>
         </div>
     </div>
-</div>
+@endsection
 <!-- /container -->
 <!-- Site footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="col-md-3"><img class="img-responsive" src="{{ asset('images/bu-logo-footer.png') }}"></div>
-        <div class="col-md-6">
-            <div class="footer-menu">
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Login</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="copyright">
-                <p>&copy; 2016 <a href="http://bu.edu.bd/" target="_blank">BU</a> | All Rights Reserved.</p>
-            </div>
-        </div>
-    </div>
-</footer>
-</body>
-</html>

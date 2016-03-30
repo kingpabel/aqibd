@@ -25,6 +25,9 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::auth();
     Route::get('/', 'HomeController@index');
-    Route::get('/{name}', 'HomeController@getByAddress');
-    Route::get('/{name}/search', 'HomeController@search');
+    Route::get('/urban-regeneration', 'HomeController@urbanRegeneration');
+    Route::get('/environmental-health', 'HomeController@environmentalHealth');
+    Route::get('/digital-dhaka', 'HomeController@digitalDhaka');
+//    Route::get('/{name}', 'HomeController@getByAddress');
+//    Route::get('/{name}/search', 'HomeController@search');
 });

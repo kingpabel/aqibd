@@ -45,11 +45,11 @@
   background-image: none;
 }
 .nav-justified > li:first-child > a {
-  border-radius: 5px 5px 0 0;
+  // border-radius: 5px 5px 0 0;
 }
 .nav-justified > li:last-child > a {
   border-bottom: 0;
-  border-radius: 0 0 5px 5px;
+  // border-radius: 0 0 5px 5px;
 }
 
 @media (min-width: 768px) {
@@ -62,11 +62,11 @@
 }
   .nav-justified > li:first-child > a {
     border-left: 0;
-    border-radius: 5px 0 0 5px;
+    // border-radius: 5px 0 0 5px;
   }
   .nav-justified > li:last-child > a {
     border-right: 0;
-    border-radius: 0 5px 5px 0;
+    // border-radius: 0 5px 5px 0;
   }
 }
 

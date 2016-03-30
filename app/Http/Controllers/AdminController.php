@@ -24,7 +24,7 @@ class AdminController extends Controller
 
     public function index()
     {
-        $data['air_datas'] = AirData::with(['location', 'airType'])->paginate(10);
+        $data['air_datas'] = AirData::with(['location', 'airType'])->latest()->paginate(10);
         return view('admin.list', $data);
     }
 
@@ -60,6 +60,8 @@ class AdminController extends Controller
         $airData->location_id = $request->location_id;
         $airData->air_type_id = $request->air_type_id;
         $airData->value = $request->value;
+        $airData->min = $request->min;
+        $airData->max = $request->max;
         $airData->save();
 
         Session::flash('success', 'Air Data Save Successfully');
@@ -96,6 +98,8 @@ class AdminController extends Controller
         $airData->location_id = $request->location_id;
         $airData->air_type_id = $request->air_type_id;
         $airData->value = $request->value;
+        $airData->min = $request->min;
+        $airData->max = $request->max;
         $airData->save();
 
         Session::flash('success', 'Air Data Updated Successfully');
@@ -113,6 +117,8 @@ class AdminController extends Controller
             'location_id' => 'required',
             'air_type_id' => 'required',
             'value' => 'required|integer',
+            'min' => 'required',
+            'max' => 'required',
         ]);
     }
 }
